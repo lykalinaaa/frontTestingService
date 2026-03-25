@@ -29,5 +29,14 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '/FrontTestingService-back'),
       }
     }
-  }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+          @import "@/app/styles/ui.scss";
+        `,
+      },
+    },
+  },
 })

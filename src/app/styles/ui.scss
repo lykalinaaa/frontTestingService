@@ -1,0 +1,38 @@
+$breakpoint-480: 480px;
+$breakpoint-768: 768px;
+$breakpoint-1024: 1024px;
+
+@mixin max-width($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+:root {
+  --primary: #e8dfd5;
+  --dark: #202124;
+  --orange: #ff7124;
+  --cinnamon: #dbbba7;
+  --blue: #3b488b;
+  --dark-blue: #272d4e;
+  --white: #ffffff;
+}
+
+input {
+  width: 100%;
+  height: 50px;
+  border-radius: 16px;
+  border: 3px solid;
+  padding: 10px;
+}
+
+input::placeholder {
+  opacity: 0.5;
+}
+
+button {
+  text-align: center;
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
+}
