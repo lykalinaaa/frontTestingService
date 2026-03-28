@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Auth from '@/features/ui/auth/Auth.vue'
 import HomePage from '@/pages/HomePage/HomePage.vue'
+import LoginPage from '@/pages/LoginPage/LoginPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/auth',
       name: 'auth',
-      component: Auth,
+      component: LoginPage,
       meta: {
         title: 'Авторизация',
         requiresAuth: false,
@@ -20,7 +20,7 @@ const router = createRouter({
       component: HomePage,
       meta: {
         title: 'Главная страница',
-        requiresAuth: false,
+        requiresAuth: true,
       },
     },
   ],
