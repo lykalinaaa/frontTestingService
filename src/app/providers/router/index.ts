@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage/HomePage.vue'
 import LoginPage from '@/pages/LoginPage/LoginPage.vue'
+import BlogPage from '@/pages/BlogPage/BlogPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,15 @@ const router = createRouter({
       component: HomePage,
       meta: {
         title: 'Главная страница',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogPage,
+      meta: {
+        title: 'Страница блога',
         requiresAuth: true,
       },
     },

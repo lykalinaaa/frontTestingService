@@ -28,6 +28,7 @@ const props = defineProps({
   background-color: var(--white);
   border-radius: 15px;
   color: var(--dark);
+  z-index: 100;
 
   &__title {
     font-weight: bold;

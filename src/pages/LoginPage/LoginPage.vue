@@ -19,34 +19,32 @@ const isUserAuth = ref<boolean>(false)
 const formDisable = ref<boolean>(false)
 const toastVal = reactive({
   isShown: false,
-  title: '',
-  message: '',
+  title: 'Ошибка авторизации',
+  message: 'Пользователь не найден. Повторите попытку.',
   type: 'error',
 })
 
-function checkAuth(payload: { userLogin: string; userPassword: string }): void {
+async function checkAuth(payload: { userLogin: string; userPassword: string }): Promise<void> {
   formDisable.value = true
-  getAuthToken({
-    login: payload.userLogin,
-    password: payload.userPassword,
-  }).then((result) => {
+
+  try {
+    const result = await getAuthToken({
+      login: payload.userLogin,
+      password: payload.userPassword,
+    })
+
     if (result.ok) {
       isUserAuth.value = true
       router.push('/')
       toastVal.isShown = false
     } else {
       toastVal.isShown = true
-      toastVal.title = 'Ошибка авторизации.'
-      toastVal.message = 'Пользователь не найден. Повторите попытку.'
-      setTimeout(() => {
-        toastVal.isShown = false
-        toastVal.title = ''
-        toastVal.message = ''
-        toastVal.type = 'error'
-      }, 5000)
     }
+  } catch (error) {
+    console.error('Auth error:', error)
+  } finally {
     formDisable.value = false
-  })
+  }
 }
 
 onMounted(() => {

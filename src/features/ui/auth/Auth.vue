@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="auth__submit">
-        <button class="auth__button" @click="getAuth()">Войти</button>
+        <Button type="orange round" @click="getAuth()" title="Войти" :disabled="formDisable" />
       </div>
     </div>
   </div>
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import Button from '@/shared/ui/Button/Button.vue'
 
 const emit = defineEmits(['checkAuth'])
 
@@ -118,13 +119,11 @@ function getAuth() {
     }
   }
 
-  &__button {
-    background-color: var(--orange);
-    max-width: 150px;
-  }
-
   &__submit {
-    text-align: center;
+    height: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>
