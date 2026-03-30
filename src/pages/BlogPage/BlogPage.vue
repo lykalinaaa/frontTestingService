@@ -1,6 +1,8 @@
 <template>
   <div class="blog-page">
     <div class="blog-page-container">
+
+      <p>{{blogInfo}}</p>
     </div>
   </div>
 </template>
@@ -9,6 +11,7 @@
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { useBlogStore } from '@/app/providers/stores/blogStore.ts'
+import Menu from "@/shared/ui/Menu/Menu.vue";
 
 const route = useRoute()
 const blogStore = useBlogStore()

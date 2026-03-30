@@ -27,18 +27,22 @@ const handleClick = () => {
   justify-content: center;
 }
 
+.button:hover {
+  cursor: pointer;
+}
+
 .orange:active {
   background-color: var(--dark-orange);
 }
 
 .orange {
   background-color: var(--orange);
-  color: var(--primary);
+  color: var(--white);
 }
 
 .blue {
   background-color: var(--dark-blue);
-  color: var(--primary);
+  color: var(--white);
 }
 
 .blue:active {

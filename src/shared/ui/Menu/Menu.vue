@@ -1,9 +1,8 @@
 <template>
   <div class="menu">
     <div class="menu__list">
-      <div class="menu__list-item">
-        <Button title="Создать блог" type="orange round" @click="createBlog" />
-      </div>
+      <Button title="Создать блог" type="orange round" @click="createBlog" />
+      <Button title="Все блоги" type="blue round" @click="showBlogs" />
     </div>
   </div>
 </template>
@@ -11,10 +10,14 @@
 <script setup lang="ts">
 import Button from '@/shared/ui/Button/Button.vue'
 
-const emit = defineEmits(['createBlog'])
+const emit = defineEmits(['createBlog', 'showBlogs'])
 
 const createBlog = () => {
   emit('createBlog')
+}
+
+const showBlogs = () => {
+  emit('showBlogs')
 }
 </script>
 
@@ -36,6 +39,7 @@ const createBlog = () => {
   display: flex;
   height: 50px;
   justify-content: end;
+  gap: 8px;
 }
 
 .menu__list-item {
