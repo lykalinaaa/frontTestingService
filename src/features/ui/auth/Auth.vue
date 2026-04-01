@@ -45,8 +45,8 @@ const props = defineProps({
 })
 
 const userAuth = reactive({
-  userLogin: 'Kurchatov',
-  userPassword: 'Igor',
+  userLogin: '',
+  userPassword: '',
 })
 
 function getAuth() {
