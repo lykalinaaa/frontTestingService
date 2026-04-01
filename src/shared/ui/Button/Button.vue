@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import HomePage from "@/pages/HomePage/HomePage.vue";
+
 const props = defineProps({
   type: String,
   title: String,
@@ -47,6 +49,14 @@ const handleClick = () => {
 
 .blue:active {
   background-color: var(--blue);
+}
+
+.blue-orange {
+  @extend .blue
+}
+
+.blue-orange:hover {
+  background-color: var(--orange);
 }
 
 .round {

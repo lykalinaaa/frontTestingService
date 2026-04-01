@@ -1,13 +1,14 @@
 <template>
-  <div class="new-blog">
-    <div class="new-blog-container">
-      <p class="new-blog__title">Блоги:</p>
-      <div class="new-blog__form">
-        <div v-for="blog in blogs" :key="blog.id" class="new-blog__item">
-          <Button :title="blog.blogName" type="blue round" @click="openBlog(blog.id)"/>
+  <div class="blogs">
+    <div class="blogs-container">
+      <p class="blogs__title">Блоги:</p>
+      <div class="blogs__form">
+        <div v-for="blog in blogs" :key="blog.id" class="blogs__item">
+          <p class="blogs__item-title" @click="openBlog(blog.id)">{{blog.blogName}}</p>
+          <Button title="Удалить" type="blue-orange round" @click="deleteBlog(blog.id)"/>
         </div>
       </div>
-      <div class="new-blog__submit">
+      <div class="blogs__submit">
         <Button type="orange round" @click="cancelBlogs()" title="Отменить" />
       </div>
     </div>
@@ -25,30 +26,34 @@ import Button from '@/shared/ui/Button/Button.vue'
 import { reactive, ref } from 'vue'
 import Toast from '@/shared/ui/Toast/Toast.vue'
 
-const emit = defineEmits(['cancel', 'openBlog'])
+const emit = defineEmits(['cancel', 'openBlog', 'deleteBlog'])
 
 const props = defineProps({
-  blogs: Array
+  blogs: Array,
+  showToast: Boolean
 })
 
 const openBlog = (id: number) => {
   emit('openBlog', id)
 }
 
+const deleteBlog = (id: number) => {
+  emit('deleteBlog', id)
+}
 const cancelBlogs = () => {
   emit('cancel')
 }
 
 const toastVal = reactive({
   isShown: false,
-  title: 'Не получилось создать блог',
-  message: 'Введите название блога.',
+  title: 'Не получилось удвлить блог',
+  message: 'Попробуйте еще раз.',
   type: 'error',
 })
 </script>
 
 <style lang="scss" scoped>
-.new-blog {
+.blogs {
   background-color: rgba(black, 0.8);
   width: 100%;
   height: 100vh;
@@ -91,13 +96,52 @@ const toastVal = reactive({
     display: flex;
     flex-direction: column;
     gap: 15px;
-    overflow: auto;
+    overflow-y: auto;
     max-height: 600px;
+    padding-right: 8px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--blue);
+      border-radius: 3px;
+
+      &:hover {
+        background-color: var(--orange);
+      }
+    }
+
   }
 
   &__item {
     height: 50px;
     width: 100%;
+    display: flex;
+    border-radius: 12px;
+    align-items: center;
+    padding-left: 12px;
+    justify-content: space-between;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: var(--blue);
+      cursor: pointer;
+    }
+
+    &-title {
+      height: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   &__label {

@@ -38,3 +38,66 @@ export async function createBlog(payload: {blogName: string, fullName: string}) 
 
   return response.json()
 }
+
+export async function deleteBlog(id: number) {
+  const url = `/api/userInfo/${id}`
+
+  return await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  })
+}
+
+export async function createPost(payload, id) {
+  const url = `/api/post?userInfoId=${id}`
+
+  const request = {
+    briefDescription: payload.briefDescription,
+    fullDescription: payload.fullDescription,
+    title: payload.title
+  }
+
+  return await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    credentials: 'include',
+  })
+}
+
+export async function editPost(payload) {
+  const url = `/api/post`
+
+  const request = {
+    briefDescription: payload.briefDescription,
+    fullDescription: payload.fullDescription,
+    id: +payload.id,
+    title: payload.title
+  }
+
+  return await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    credentials: 'include',
+  })
+}
+
+export async function deletePost(id: number) {
+  const url = `/api/post/${id}`
+
+  return await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  })
+}

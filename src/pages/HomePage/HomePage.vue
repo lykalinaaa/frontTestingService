@@ -1,6 +1,8 @@
 <template>
-  <div class="home-page">
-    <Menu v-if="showMenu" @create-blog="onNewBlogPopup" @show-blogs="onShowBlogsPopup"/>
+  <div v-if="isLoading">
+    <p>Загрузка...</p>
+  </div>
+  <div v-else class="home-page">
     <div v-if="!blogStore.blogs.length" class="home-page__container--empty">
       <div class="home-page__container-info">
         <p class="home-page__container-info-text">Пока нет блогов.</p>
@@ -13,78 +15,76 @@
         </div>
       </div>
     </div>
-    <div v-else class="home-page__container">
-      <div class="home-page__container-content">
-
+    <div v-else-if="!allPostsWithAuthors.length" class="home-page__container--empty">
+      <div class="home-page__container-info">
+        <p class="home-page__container-info-text">Ни в одном блоге пока нет постов!</p>
+        <p>Перейдите во "Все блоги" и добавьте пост.</p>
       </div>
     </div>
-    <new-blog v-if="newBlogPopup" @cancel="cancelBlog" @create-blog="onCreateBlog" />
-    <show-blogs v-if="showBlogsPopup" @cancel="cancelBlogs" :blogs="blogStore.blogs" @open-blog="openBlog"/>
+    <div v-else class="home-page__container">
+      <div class="home-page__container-content">
+        <div v-for="post in allPostsWithAuthors" class="blog-page-posts-item">
+          <p class="blog-page-posts-item__blog" @click="openBlog(post.blogId)">
+            {{post.blogName}}
+          </p>
+          <h2>{{post.title}}</h2>
+          <p>{{post.briefDescription}}</p>
+          <p class="blog-page-posts-item__footer">
+            <span>
+              {{post.dateTime}}
+            </span>
+            <span>
+              Комментарии: {{post.comments.length}}
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
+  <new-blog v-if="newBlogPopup" @cancel="cancelBlog" @create-blog="onCreateBlog" />
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import {computed, onMounted, ref, toRaw} from 'vue'
 import Button from '@/shared/ui/Button/Button.vue'
-import { createBlog, getPosts } from '@/features/api'
+import { createBlog } from '@/features/api'
 import { useBlogStore } from '@/app/providers/stores/blogStore.ts'
 import NewBlog from '@/features/ui/newBlog/newBlog.vue'
 import router from '@/app/providers/router'
-import Menu from '@/shared/ui/Menu/Menu.vue'
-import { useRoute } from 'vue-router'
-import ShowBlogs from "@/features/ui/showBlogs/showBlogs.vue";
-
-const route = useRoute()
 
 const blogStore = useBlogStore()
 const newBlogPopup = ref<boolean>(false)
-const showBlogsPopup = ref<boolean>(false)
 
-const onNewBlogPopup = () => {
-  newBlogPopup.value = true
-}
-
-const onShowBlogsPopup = () => {
-  showBlogsPopup.value = true
-}
-
-const cancelBlogs = () => {
-  showBlogsPopup.value = false
-}
-
-const openBlog = (id: number) => {
-  if (id) {
-    router.push(`/blog/${id}`)
-  }
-}
-
-const showMenu = computed(() => {
-  return route.path !== '/auth'
-})
-
-const menuList = reactive([
-  {
-    title: 'Главная',
-    path: '/',
-    isSelected: true,
-    type: 'blue',
-  },
-  {
-    title: 'Создать блог',
-    path: '/blog',
-    isSelected: false,
-    type: 'orange round',
-  },
-])
+const isLoading = ref<boolean>(true)
 
 const cancelBlog = () => {
   newBlogPopup.value = false
 }
 
+const allPostsWithAuthors = computed(() => {
+  if (!blogStore.blogs?.length) return []
+
+  const posts = blogStore.blogs.flatMap(blog => {
+    if (!blog.post?.length) return []
+
+    return blog.post.map(post => ({
+      ...post,
+      blogId: blog.id,
+      blogName: blog.blogName
+    }))
+  })
+
+  return posts.sort((a, b) => {
+    const dateA = new Date(a.dateTime)
+    const dateB = new Date(b.dateTime)
+    return dateB.getTime() - dateA.getTime()
+  })
+})
+
 const onCreateBlog = async (blogName: string) => {
   const blog = await createBlog({ blogName: blogName, fullName: blogName })
 
-  blogStore.setBlogs(await getPosts())
+  blogStore.setBlogs()
   router.push({
     name: 'blog',
     params: { id: blog.id },
@@ -93,8 +93,20 @@ const onCreateBlog = async (blogName: string) => {
   newBlogPopup.value = false
 }
 
+const openBlog = (id) => {
+  router.push({
+    name: 'blog',
+    params: { id: id },
+  })
+}
+
+const onNewBlogPopup = () => {
+  newBlogPopup.value = true
+}
+
 onMounted(async () => {
-  blogStore.setBlogs(await getPosts())
+  await blogStore.setBlogs()
+  isLoading.value = false
 })
 </script>
 
@@ -102,22 +114,35 @@ onMounted(async () => {
 .home-page {
   background-color: var(--primary);
   width: 100%;
-  height: 100%;
+  padding-top: 150px;
+  display: flex;
+  justify-content: center;
 
   &__container {
     max-width: 800px;
+    flex: 1;
+    min-height: calc(100vh - 150px);
 
     &--empty {
       width: 100%;
-      height: 100vh;
+      height: calc(100vh - 150px);
       display: flex;
       justify-content: center;
       align-items: center;
     }
   }
 
+  &__container-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
   &__container-info {
     background-color: var(--white);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
     text-align: center;
     max-width: 500px;
     width: 100%;
@@ -135,6 +160,14 @@ onMounted(async () => {
       display: flex;
       justify-content: center;
     }
+  }
+}
+
+.blog-page-posts-item__blog {
+  text-align: end;
+
+  &:hover {
+    color: var(--orange);
   }
 }
 </style>

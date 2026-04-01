@@ -1,21 +1,23 @@
 <template>
-  <div class="new-blog">
-    <div class="new-blog-container">
-      <p class="new-blog__title">Создайте новый блог!</p>
-      <div class="new-blog__form">
-        <div class="new-blog__field">
-          <label class="new-blog__label">Название блога</label>
+  <div class="new-post">
+    <div class="new-post-container">
+      <p class="new-post__title">Создайте новый пост!</p>
+      <div class="new-post__form">
+        <div class="new-post__field">
+          <label class="new-post__label">Название поста</label>
           <input
-            v-model="newBlog.blogName"
+            v-model="newPost.title"
             type="text"
-            class="new-blog__input new-blog__input--username"
+            class="new-post__input new-post__input--username"
             placeholder="Введите название"
           />
+          <label class="new-post__label">Текст поста</label>
+          <textarea id="post" name="post" rows="6" v-model="newPost.fullDescription" class="new-post__text"/>
         </div>
       </div>
-      <div class="new-blog__submit">
-        <Button type="blue round" @click="cancelBlog()" title="Отменить" />
-        <Button type="orange round" @click="createBlog()" title="Создать" />
+      <div class="new-post__submit">
+        <Button type="blue round" @click="cancelPost()" title="Отменить" />
+        <Button type="orange round" @click="createPost()" title="Создать" />
       </div>
     </div>
   </div>
@@ -29,24 +31,39 @@
 
 <script setup lang="ts">
 import Button from '@/shared/ui/Button/Button.vue'
-import { reactive, ref } from 'vue'
+import {reactive, ref, toRaw} from 'vue'
 import Toast from '@/shared/ui/Toast/Toast.vue'
 import {useBlogStore} from "@/app/providers/stores/blogStore.ts";
 
-const emit = defineEmits(['cancel', 'createBlog'])
-const blogStore = useBlogStore()
-
-const newBlog = ref({
-  blogName: '',
+const props = defineProps({
+  postInfo: {
+    type: Object,
+  }
 })
 
-const cancelBlog = () => {
+const emit = defineEmits(['cancel', 'createPost', 'editPost'])
+const blogStore = useBlogStore()
+
+const newPost = ref({
+  title: props.postInfo?.title || '',
+  fullDescription: props.postInfo?.fullDescription || '',
+  briefDescription: props.postInfo?.briefDescription || '',
+  id: props.postInfo?.id || null,
+  createdAt: '',
+  comments: ''
+})
+
+const cancelPost = () => {
   emit('cancel')
 }
 
-const createBlog = async () => {
-  if (newBlog.value.blogName.trim()) {
-    emit('createBlog', newBlog.value.blogName)
+const createPost = async () => {
+  if (newPost.value.title.trim() && newPost.value.fullDescription.trim()) {
+    newPost.value.createdAt = new Date()
+    newPost.value.briefDescription = newPost.value.fullDescription.slice(0, 100)
+    if (newPost.value.fullDescription.length > 100) newPost.value.briefDescription += '...'
+    const rawPost = toRaw(newPost.value)
+    emit('createPost', rawPost)
     await blogStore.setBlogs()
   } else {
     toastVal.isShown = true
@@ -58,14 +75,14 @@ const createBlog = async () => {
 
 const toastVal = reactive({
   isShown: false,
-  title: 'Не получилось создать блог',
-  message: 'Введите название блога.',
+  title: 'Не получилось создать пост',
+  message: 'Заполните все поля',
   type: 'error',
 })
 </script>
 
 <style lang="scss" scoped>
-.new-blog {
+.new-post {
   background-color: rgba(black, 0.8);
   width: 100%;
   height: 100vh;
@@ -121,7 +138,7 @@ const toastVal = reactive({
 
   &__input {
     border-color: var(--blue);
-    margin-top: 5px;
+    margin: 5px 0 30px 0;
 
     &::placeholder {
       color: var(--primary);
@@ -130,6 +147,13 @@ const toastVal = reactive({
     &--disabled {
       opacity: 0.5;
     }
+  }
+
+  &__text {
+    border: none;
+    margin-top: 10px;
+    border-radius: 20px;
+    padding: 20px;
   }
 
   &__submit {

@@ -2,13 +2,17 @@
   <div class="menu">
     <div class="menu__list">
       <Button title="Создать блог" type="orange round" @click="createBlog" />
-      <Button title="Все блоги" type="blue round" @click="showBlogs" />
+      <Button v-if="showBlogsButton" title="Все блоги" type="blue round" @click="showBlogs" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import Button from '@/shared/ui/Button/Button.vue'
+
+const props = defineProps({
+  showBlogsButton: Boolean
+})
 
 const emit = defineEmits(['createBlog', 'showBlogs'])
 
