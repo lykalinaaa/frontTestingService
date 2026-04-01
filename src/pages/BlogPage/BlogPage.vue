@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import {computed, onMounted, reactive, ref, toRaw} from 'vue'
+import {computed, onMounted, reactive, ref, toRaw, watch} from 'vue'
 import { useBlogStore } from '@/app/providers/stores/blogStore.ts'
 import Button from "@/shared/ui/Button/Button.vue";
 import NewPost from '@/features/ui/newPost/newPost.vue'
@@ -171,6 +171,10 @@ const toastVal = reactive({
 })
 
 onMounted(() => {
+  updateBlogInfo()
+})
+
+watch(() => route.params.id, () => {
   updateBlogInfo()
 })
 
